@@ -13,6 +13,12 @@ const source = new URL('./entry.png', import.meta.url);
 if (!existsSync(source)) {
   throw new Error('entry.png is missing beside main.ts: the entry image must ship in the repository root');
 }
+if (statSync(source).size === 0) {
+  throw new Error('entry.png is empty: a zero-byte image cannot be judged');
+}
+if (statSync(source).size > 1048576) {
+  throw new Error('entry.png exceeds the 1 MiB gate limit for this competition');
+}
 const destination = join(process.env.MAKEFUN_OUTPUT_DIR ?? '/output', 'entry.png');
 copyFileSync(source, destination);
 const sourceBytes = statSync(source).size;
